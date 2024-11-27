@@ -11,7 +11,7 @@ type HistoryEntry struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func New(id int, t *Task) (*HistoryEntry, error) {
+func NewEntry(id int, t *Task) (*HistoryEntry, error) {
 	if t == nil {
 		return nil, fmt.Errorf("cannot create history entry: task is nil")
 	}
