@@ -1,9 +1,11 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type HistoryEntry struct {
 	ID        int       `json:"id"`
-	Task      Task      `json:"task"`
+	Task      *Task     `json:"task"`
 	Timestamp time.Time `json:"timestamp"`
 }
