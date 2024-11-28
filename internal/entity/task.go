@@ -19,7 +19,7 @@ type Task struct {
 	Deadline    time.Time `json:"deadline"`
 	Description string    `json:"description"`
 	Status      Status    `json:"status"`
-	Parent      *Task     `json:"parent,omitempty"`
+	Parent      *Task     `json:"-"`
 	Subtask     []*Task   `json:"subtask,omitempty"`
 }
 
