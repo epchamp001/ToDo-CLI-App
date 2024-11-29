@@ -22,12 +22,9 @@ func DeleteSubtaskFromTask(parentID int, subtaskID int, tasks *[]*entity.Task) e
 		return fmt.Errorf("parent task with ID %d not found", parentID)
 	}
 
-	for i, subtask := range parentTask.Subtask {
-		if subtask.ID == subtaskID {
-			parentTask.Subtask = append(parentTask.Subtask[:i], parentTask.Subtask[i+1:]...)
-			return nil
-		}
+	if err := parentTask.DeleteSubtask(subtaskID); err != nil {
+		return fmt.Errorf("failed to delete subtask with %d: %w", subtaskID, err)
 	}
 
-	return fmt.Errorf("subtask with ID %d not found under parent task with ID %d", subtaskID, parentID)
+	return nil
 }

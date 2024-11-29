@@ -6,19 +6,30 @@ import (
 	"time"
 )
 
-func CreateSubtask(description string, deadline time.Time, tasks *[]*entity.Task, parent *entity.Task) error {
+func CreateSubtask(description string, parentID int, tasks *[]*entity.Task) error {
+	if len(*tasks) == 0 {
+		return fmt.Errorf("tasks list is empty")
+	}
+
+	var parent *entity.Task
+	for _, task := range *tasks {
+		if task.ID == parentID {
+			parent = task
+			break
+		}
+	}
+
 	if parent == nil {
 		return fmt.Errorf("parent task is nil")
 	}
 
 	subtaskID := entity.ID.GenerateTaskID()
+	subtask := entity.NewTask(subtaskID, time.Now(), description, parent)
 
-	subtask := entity.NewTask(subtaskID, deadline, description, parent)
-
-	if parent.Subtask == nil {
-		parent.Subtask = []*entity.Task{}
+	if err := parent.AddSubtask(subtask); err != nil {
+		return fmt.Errorf("failed to add subtask: %w", err)
 	}
-	parent.Subtask = append(parent.Subtask, subtask)
+
 	SortTasksByDeadline(&parent.Subtask)
 	return nil
 }

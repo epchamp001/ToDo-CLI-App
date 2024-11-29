@@ -31,6 +31,10 @@ func LoadTasksFromFile(filename string) ([]*entity.Task, error) {
 		if task.IsDeadlineExpired() {
 			task.UpdateDeadline(time.Now())
 		}
+
+		for _, subtask := range task.Subtask {
+			subtask.Parent = task
+		}
 	}
 	return tasks, nil
 }
