@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"time"
 )
 
@@ -146,4 +147,82 @@ func (h *History) LoadFromFile(filename string) error {
 	}
 
 	return nil
+}
+
+func (h *History) ShowHistory() {
+	// Проверяем, есть ли записи в истории
+	if len(h.History) == 0 {
+		fmt.Println("No history available.")
+		return
+	}
+
+	// Группируем записи по дате добавления в историю
+	groupedByDate := make(map[string][]*HistoryEntry)
+	for _, entry := range h.History {
+		date := entry.Timestamp.Format("2006-01-02")
+		groupedByDate[date] = append(groupedByDate[date], entry)
+	}
+
+	// Отображаем историю
+	fmt.Println("History:\n")
+
+	// Сортируем даты для последовательного отображения
+	dates := make([]string, 0, len(groupedByDate))
+	for date := range groupedByDate {
+		dates = append(dates, date)
+	}
+	sort.Strings(dates)
+
+	for _, date := range dates {
+		fmt.Printf("%s:\n", date)
+		for i, entry := range groupedByDate[date] {
+			task := entry.Task
+			fmt.Printf(" %d.  - [ID: %d] Task: \"%s\"\n", i+1, task.ID, task.Description)
+			fmt.Printf("      - Status: %s\n", task.Status)
+			fmt.Printf("      - Deadline: %s\n", task.Deadline.Format("2006-01-02 15:04:05"))
+			if len(task.Subtask) > 0 {
+				fmt.Println("      - Subtasks:")
+				for _, subtask := range task.Subtask {
+					fmt.Printf("          - %s\n", subtask.Description)
+				}
+			} else {
+				fmt.Println("      - Subtasks: empty")
+			}
+			fmt.Println()
+		}
+	}
+}
+
+func (h *History) ShowHistoryDate(date time.Time) {
+	targetDate := date.Format("2006-01-02")
+
+	var entries []*HistoryEntry
+	for _, entry := range h.History {
+		entryDate := entry.Timestamp.Format("2006-01-02")
+		if entryDate == targetDate {
+			entries = append(entries, entry)
+		}
+	}
+
+	if len(entries) == 0 {
+		fmt.Printf("No history available for the date: %s\n", targetDate)
+		return
+	}
+
+	fmt.Printf("History for %s:\n", targetDate)
+	for i, entry := range entries {
+		task := entry.Task
+		fmt.Printf(" %d.  - [ID: %d] Task: \"%s\"\n", i+1, task.ID, task.Description)
+		fmt.Printf("      - Status: %s\n", task.Status)
+		fmt.Printf("      - Deadline: %s\n", task.Deadline.Format("2006-01-02 15:04:05"))
+		if len(task.Subtask) > 0 {
+			fmt.Println("      - Subtasks:")
+			for _, subtask := range task.Subtask {
+				fmt.Printf("          - %s\n", subtask.Description)
+			}
+		} else {
+			fmt.Println("      - Subtasks: empty")
+		}
+		fmt.Println()
+	}
 }

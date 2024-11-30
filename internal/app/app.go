@@ -82,4 +82,5 @@ func Run() {
 	// затем activeTask мы передаем в SaveTasksToFile для сохранения Active заданий в tasks.json
 	// В цикле идем по срезу inactiveTask и для каждого Task создаем запись в истории с помощью CreateEntryInHistory// После цикла мы вызываем метод для History, который выполнит очищение истории от устаревших записей ClearOldEntry
 	// После этого мы вызываем метод для сохранения истории в файл history.json
+
 }
