@@ -11,6 +11,10 @@ func UpdateTaskStatus(taskID int, status entity.Status, tasks *[]*entity.Task) e
 			task.SetStatus(status)
 			return nil
 		}
+
+		if err := UpdateTaskStatus(taskID, status, &task.Subtask); err == nil {
+			return nil
+		}
 	}
 
 	return fmt.Errorf("task with ID %d not found", taskID)

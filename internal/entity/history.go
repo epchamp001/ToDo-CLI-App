@@ -86,7 +86,7 @@ func (h *History) ClearOldEntry() {
 	h.History = newHistory
 }
 
-func (h *History) GetEntriesForLastDays(days int) ([]*HistoryEntry, error) {
+func (h *History) GetEntriesForLastDays(days int) (*History, error) {
 	if days <= 0 {
 		return nil, fmt.Errorf("days must be greater than zero")
 	}
@@ -98,29 +98,35 @@ func (h *History) GetEntriesForLastDays(days int) ([]*HistoryEntry, error) {
 	// Время, которое было days дней назад
 	t := time.Now().AddDate(0, 0, -days)
 
-	result := make([]*HistoryEntry, 0)
+	filteredHistory := &History{
+		ID:      h.ID,
+		History: make([]*HistoryEntry, 0),
+	}
+
 	for _, e := range h.History {
 		if e.Timestamp.After(t) || e.Timestamp.Equal(t) {
-			result = append(result, e)
+			filteredHistory.History = append(filteredHistory.History, e)
 		}
 	}
 
-	return result, nil
+	return filteredHistory, nil
 }
 
-func (h *History) GetEntriesForDate(date time.Time) ([]*HistoryEntry, error) {
+func (h *History) GetEntriesForDate(date time.Time) (*History, error) {
 	startOfDay := date.Truncate(24 * time.Hour)
 	endOfDay := startOfDay.Add(24 * time.Hour)
 
-	result := make([]*HistoryEntry, 0)
-
+	filteredHistory := &History{
+		ID:      h.ID,
+		History: make([]*HistoryEntry, 0),
+	}
 	for _, e := range h.History {
 		if !e.Timestamp.Before(startOfDay) && e.Timestamp.Before(endOfDay) {
-			result = append(result, e)
+			filteredHistory.History = append(filteredHistory.History, e)
 		}
 	}
 
-	return result, nil
+	return filteredHistory, nil
 }
 
 func (h *History) SaveToFile(filename string) error {
@@ -159,7 +165,7 @@ func (h *History) ShowHistory() {
 	// Группируем записи по дате добавления в историю
 	groupedByDate := make(map[string][]*HistoryEntry)
 	for _, entry := range h.History {
-		date := entry.Timestamp.Format("2006-01-02")
+		date := entry.Timestamp.Format("02-01-2006")
 		groupedByDate[date] = append(groupedByDate[date], entry)
 	}
 
@@ -177,9 +183,10 @@ func (h *History) ShowHistory() {
 		fmt.Printf("%s:\n", date)
 		for i, entry := range groupedByDate[date] {
 			task := entry.Task
-			fmt.Printf(" %d.  - [ID: %d] Task: \"%s\"\n", i+1, task.ID, task.Description)
+			fmt.Printf(" %d.  - [ID: %d] Task: \"%s\"\n", i+1, entry.ID, task.Description)
+			fmt.Printf("      - Task ID: %d\n", task.ID)
 			fmt.Printf("      - Status: %s\n", task.Status)
-			fmt.Printf("      - Deadline: %s\n", task.Deadline.Format("2006-01-02 15:04:05"))
+			fmt.Printf("      - Deadline: %s\n", task.Deadline.Format("02-01-2006 15:04:05"))
 			if len(task.Subtask) > 0 {
 				fmt.Println("      - Subtasks:")
 				for _, subtask := range task.Subtask {
@@ -194,11 +201,11 @@ func (h *History) ShowHistory() {
 }
 
 func (h *History) ShowHistoryDate(date time.Time) {
-	targetDate := date.Format("2006-01-02")
+	targetDate := date.Format("02-01-2006")
 
 	var entries []*HistoryEntry
 	for _, entry := range h.History {
-		entryDate := entry.Timestamp.Format("2006-01-02")
+		entryDate := entry.Timestamp.Format("02-01-2006")
 		if entryDate == targetDate {
 			entries = append(entries, entry)
 		}
@@ -212,9 +219,10 @@ func (h *History) ShowHistoryDate(date time.Time) {
 	fmt.Printf("History for %s:\n", targetDate)
 	for i, entry := range entries {
 		task := entry.Task
-		fmt.Printf(" %d.  - [ID: %d] Task: \"%s\"\n", i+1, task.ID, task.Description)
+		fmt.Printf(" %d.  - [ID: %d] Task: \"%s\"\n", i+1, entry.ID, task.Description)
+		fmt.Printf("      - Task ID: %d\n", task.ID)
 		fmt.Printf("      - Status: %s\n", task.Status)
-		fmt.Printf("      - Deadline: %s\n", task.Deadline.Format("2006-01-02 15:04:05"))
+		fmt.Printf("      - Deadline: %s\n", task.Deadline.Format("02-01-2006 15:04:05"))
 		if len(task.Subtask) > 0 {
 			fmt.Println("      - Subtasks:")
 			for _, subtask := range task.Subtask {
