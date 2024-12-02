@@ -8,9 +8,9 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "todo",
 	Short: "CLI для управления задачами",
-	Long: "Это приложение для управления задачами. У каждой задачи могут быть подзадачи.\n" +
-		"Задачи сортируются по Deadline. Выполненные задачи сохраняются в историю.\n" +
-		"Невыполненные задачи также сохраняются, но в другой файл и там хранятся до выполнения.",
+	Long: "This is a task management app. Each task can have subtasks.\n" +
+		"Tasks are sorted by Deadline. Completed tasks are saved to the history.\n" +
+		"Unexecuted tasks are also saved, but in another file and stored there until completion.",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Используйте --help для просмотра доступных команд и их флагов.")
 	},

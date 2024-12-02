@@ -156,7 +156,6 @@ func (h *History) LoadFromFile(filename string) error {
 }
 
 func (h *History) ShowHistory() {
-	// Проверяем, есть ли записи в истории
 	if len(h.History) == 0 {
 		fmt.Println("No history available.")
 		return
@@ -169,7 +168,6 @@ func (h *History) ShowHistory() {
 		groupedByDate[date] = append(groupedByDate[date], entry)
 	}
 
-	// Отображаем историю
 	fmt.Println("History:\n")
 
 	// Сортируем даты для последовательного отображения
